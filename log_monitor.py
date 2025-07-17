@@ -14,3 +14,16 @@ def stream_log():
         log_lines = tail_log(LOG_FILE)
         log_area.text("".join(log_lines))
         time.sleep(2)
+import os
+import time
+
+def watch_file(filepath, callback):
+    st.session_state.log_lines = ""
+    with open(filepath, "r") as f:
+        f.seek(0, os.SEEK_END)
+        while True:
+            line = f.readline()
+            if line:
+                callback(line)
+            else:
+                time.sleep(1)

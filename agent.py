@@ -1,26 +1,35 @@
 from openai import OpenAI
-from utils import log_interaction
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
 
-# 🔐 Load .env variables
+# ✅ Load .env
 load_dotenv()
 
-# ✅ Load API Key from .env
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# ✅ Get key from env
+api_key = os.getenv("OPENAI_API_KEY")
 
+# ✅ Create the OpenAI client (CORRECT for v1+)
+client = OpenAI(api_key=api_key)
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+# ✅ Load .env
+load_dotenv()
+
+# ✅ Get key from env
+api_key = os.getenv("OPENAI_API_KEY")
+
+# ✅ Create OpenAI client
+client = OpenAI(api_key=api_key)
+
+# ✅ Define the function
 def get_ai_response(prompt, domain):
-    """
-    Get a response from the OpenAI Chat API for a given prompt and domain context.
-    Logs the interaction after receiving the AI's reply.
-    """
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4",
         messages=[
-            {"role": "system", "content": f"You are AEGIS, an expert assistant in {domain}. Always respond clearly and concisely."},
+            {"role": "system", "content": f"You are AEGIS, an expert assistant in {domain}. Respond clearly."},
             {"role": "user", "content": prompt}
         ]
     )
-    ai_reply = response.choices[0].message.content.strip()
-    log_interaction(prompt, ai_reply)
-    return ai_reply
+    return response.choices[0].message.content.strip()

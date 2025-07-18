@@ -1,3 +1,0 @@
-2025-07-16 09:55:12 User login failed for admin
-2025-07-16 10:00:11 Detected unauthorized access attempt (CVE-2024-3094)
-2025-07-16 10:15:00 File named malicious.exe uploaded

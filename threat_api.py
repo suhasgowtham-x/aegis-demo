@@ -1,4 +1,3 @@
-# threat_api.py
 import os
 import requests
 from dotenv import load_dotenv
@@ -15,10 +14,10 @@ def check_file_hash(file_hash):
         "x-apikey": VIRUSTOTAL_API_KEY
     }
     response = requests.get(url, headers=headers)
-    if response.status_code == 200:
+    try:
         return response.json()
-    else:
-        return {"error": response.text}
+    except Exception as e:
+        return {"error": f"Invalid VirusTotal response: {str(e)}"}
 
 def check_ip_address(ip):
     """Check IP reputation using AbuseIPDB"""
@@ -29,10 +28,11 @@ def check_ip_address(ip):
     }
     params = {
         "ipAddress": ip,
-        "maxAgeInDays": 90
+        "maxAgeInDays": 90,
+        "verbose": True
     }
     response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
+    try:
         return response.json()
-    else:
-        return {"error": response.text}
+    except Exception as e:
+        return {"error": f"Invalid AbuseIPDB response: {str(e)}"}

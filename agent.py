@@ -1,29 +1,17 @@
 from openai import OpenAI
-import os
 from dotenv import load_dotenv
+import os
 
-# ✅ Load .env
+# ✅ Load environment variables
 load_dotenv()
 
-# ✅ Get key from env
+# ✅ Get API key from .env
 api_key = os.getenv("OPENAI_API_KEY")
 
-# ✅ Create the OpenAI client (CORRECT for v1+)
-client = OpenAI(api_key=api_key)
-from openai import OpenAI
-import os
-from dotenv import load_dotenv
+# ✅ Initialize the OpenAI client
+client = OpenAI(api_key=api_key)  # Only valid with openai>=1.0.0
 
-# ✅ Load .env
-load_dotenv()
-
-# ✅ Get key from env
-api_key = os.getenv("OPENAI_API_KEY")
-
-# ✅ Create OpenAI client
-client = OpenAI(api_key=api_key)
-
-# ✅ Define the function
+# ✅ Define function
 def get_ai_response(prompt, domain):
     response = client.chat.completions.create(
         model="gpt-4",

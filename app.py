@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 import random
 from dotenv import load_dotenv
 from fpdf import FPDF
-import openai
+from openai import OpenAI
 
 from threat_api import check_file_hash, check_ip_address
 from agent import get_ai_response
 
-# Load OpenAI Key
+# Load environment variables
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 # Setup Streamlit
 st.set_page_config(page_title="AEGIS", layout="wide")
@@ -51,7 +51,7 @@ if app_mode == "🛡️ CVE Vulnerability Scanner":
         st.code(content[:1500], language="bash")
         with st.spinner("Analyzing with AI..."):
             prompt = f"Scan this log file for known vulnerabilities:\n{content}"
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You're a cybersecurity expert."},
@@ -71,7 +71,10 @@ elif app_mode == "🧬 VirusTotal File Hash Checker":
         file_hash = hashlib.sha256(file_bytes).hexdigest()
         st.write(f"SHA256: `{file_hash}`")
         result = check_file_hash(file_hash)
-        st.write("🔍 VirusTotal result:", result)
+        if "error" in result:
+            st.warning("⚠️ File not found in VirusTotal.")
+        else:
+            st.write("🔍 VirusTotal result:", result)
 
 # AbuseIPDB IP Threat Lookup
 elif app_mode == "🎯 AbuseIPDB IP Threat Lookup":
@@ -80,7 +83,10 @@ elif app_mode == "🎯 AbuseIPDB IP Threat Lookup":
     if st.button("Check IP Threat"):
         if ip:
             result = check_ip_address(ip)
-            st.write("📌 AbuseIPDB result:", result)
+            if "error" in result:
+                st.error("❌ Authentication failed or key missing. Check your API key.")
+            else:
+                st.write("📌 AbuseIPDB result:", result)
 
 # AEGIS Chat Assistant
 elif app_mode == "🤖 AEGIS - Ask Anything":
@@ -88,7 +94,7 @@ elif app_mode == "🤖 AEGIS - Ask Anything":
     user_input = st.text_input("💬 Ask AEGIS anything...")
     if st.button("Get Response"):
         if user_input:
-            reply = get_ai_response(user_input)
+            reply = get_ai_response(user_input, "cybersecurity")
             st.write("🧠 AEGIS says:", reply)
 
 # Real-Time Log Monitor + AI Alert
@@ -123,7 +129,7 @@ elif app_mode == "📡 Real-Time Log Monitor + AI Alert":
 
         if suspicious_lines:
             with st.spinner("🧠 Analyzing with GPT..."):
-                alert = get_ai_response("Analyze these log lines:\n" + "".join(suspicious_lines[-10:]))
+                alert = get_ai_response("Analyze these log lines:\n" + "".join(suspicious_lines[-10:]), "cybersecurity")
                 st.error(f"🚨 AI Security Alert:\n\n{alert}")
         else:
             st.success("✅ No suspicious activity found.")

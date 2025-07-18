@@ -1,4 +1,6 @@
+# ✅ scanner.py — fully working version
 import pandas as pd
+import streamlit as st
 
 def export_report(results):
     df = pd.DataFrame(results)
